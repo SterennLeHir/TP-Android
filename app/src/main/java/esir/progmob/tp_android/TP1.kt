@@ -11,10 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 
-class MainActivity : ComponentActivity() {
+class TP1 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main);
+        setContentView(R.layout.tp1_layout1);
 
         // Récupération de la ListView
         val listView = findViewById<ListView>(R.id.list1)

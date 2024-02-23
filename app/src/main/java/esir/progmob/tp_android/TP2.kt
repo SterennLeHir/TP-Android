@@ -2,6 +2,8 @@ package esir.progmob.tp_android
 
 import android.content.Context
 import android.os.Bundle
+import android.widget.ListView
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import java.io.File
 import java.io.FileInputStream
@@ -16,10 +18,12 @@ class TP2 : ComponentActivity() {
         setContentView(R.layout.tp2_layout1);
 
         val filename = "LEHIR-LECOMTE"
-        val fileContents = "Bonjour Sterenn ROUX"
+        val fileContent = "Bonjour Sterenn ROUX"
         this.openFileOutput(filename, Context.MODE_PRIVATE).use {
-            it.write(fileContents.toByteArray())
+            it.write(fileContent.toByteArray())
         }
+
+        val textView = findViewById<TextView>(R.id.textView5)
 
         try {
             val fileToRead : InputStream = openFileInput(filename)
@@ -28,6 +32,7 @@ class TP2 : ComponentActivity() {
             fileToRead.read(buffer)
             fileToRead.close()
             val content : String = String(buffer)
+            textView.text = content
         } catch(e : IOException) {
             e.printStackTrace()
         }

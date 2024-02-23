@@ -19,11 +19,12 @@
             android:layout_width="match_parent"
             android:layout_height="62dp"
             android:ems="10"
-            android:inputType="text"/>
+            android:inputType="text"
+            android:hint="Lorem ipsum"/>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <Button
@@ -44,5 +45,26 @@
                 android:layout_weight="1"
                 android:text="CANCEL" />
         </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <EditText
+                android:id="@+id/form2"
+                android:layout_width="match_parent"
+                android:layout_height="59dp"
+                android:ems="10"
+                android:inputType="text"
+                android:hint="Lorem ipsum"/>
+
+            <Button
+                android:id="@+id/ok2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="OK" />
+        </LinearLayout>
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

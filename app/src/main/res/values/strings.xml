@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TP-Android</string>
+    <string name="defaultButton">Click here</string>
+    <string name="defaultText">Lorem ipsum</string>
+</resources>

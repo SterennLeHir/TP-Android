@@ -3,7 +3,10 @@ package esir.progmob.tp_android
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
+import android.os.FileObserver
+import android.util.Log
 import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ListView
@@ -17,9 +20,11 @@ import java.io.InputStream
 
 
 class TP2 : ComponentActivity() {
+    private lateinit var fileListAdapter: ArrayAdapter<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tp2_layout1);
+        /* Questions 1 à 4 */
 
         // Création du fichier dans le stockage interne
         val filename = "LEHIR-LECOMTE"
@@ -70,7 +75,43 @@ class TP2 : ComponentActivity() {
             }
         }
 
+        /* Question 5 à 7 */
+        val nameFileView = findViewById<EditText>(R.id.form2)
 
+        // Adapter for ListView
+        val filesDir = applicationContext.filesDir
+        val fileList = filesDir.listFiles()?.map { it.name } ?: emptyList()
+        fileListAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, fileList)
+        val list = findViewById<ListView>(R.id.list)
+        list.adapter = fileListAdapter
 
+        val buttonOk2 = findViewById<Button>(R.id.ok2)
+        buttonOk2.setOnClickListener {
+            val nameFile = nameFileView.text.toString()
+            Log.i("Nom du fichier", nameFile)
+            if (nameFile == "") {
+                AlertDialog.Builder(this)
+                    .setTitle("Erreur")
+                    .setMessage("Le nom du fichier est vide")
+                    .setPositiveButton("OK", null)
+                    .show()
+            } else {
+                // on crée un fichier avec le nom mis dans l'editView
+                this.openFileOutput(nameFile, Context.MODE_PRIVATE) // /!\ createNewFile ne marche pas
+                refreshFileList()
+                list.adapter = fileListAdapter
+            }
+        }
+
+        // Faire une nouvelle classe Custom Adapter associé à un layout avec une zone de texte et un bouton. C'est cet adapter qu'on va donner à la liste
+    }
+
+    /**
+     * Met à jour la liste des fichiers
+     */
+    private fun refreshFileList() {
+        val filesDir = applicationContext.filesDir
+        val fileList = filesDir.listFiles()?.map { it.name } ?: emptyList()
+        fileListAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, fileList)
     }
 }

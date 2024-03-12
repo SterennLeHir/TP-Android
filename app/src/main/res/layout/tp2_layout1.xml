@@ -19,8 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="62dp"
             android:ems="10"
-            android:inputType="text"
-            android:hint="Lorem ipsum"/>
+            android:hint="Contenu du fichier"
+            android:inputType="text" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -47,8 +47,8 @@
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <EditText
@@ -56,14 +56,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="59dp"
                 android:ems="10"
-                android:inputType="text"
-                android:hint="Lorem ipsum"/>
+                android:hint="Nom de fichier"
+                android:inputType="text" />
 
             <Button
                 android:id="@+id/ok2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="OK" />
+
+            <ListView
+                android:id="@+id/list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+            </ListView>
         </LinearLayout>
     </LinearLayout>
 

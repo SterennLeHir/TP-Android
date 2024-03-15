@@ -3,12 +3,10 @@ package esir.progmob.tp_android
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
-import android.os.FileObserver
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
@@ -16,11 +14,8 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
-
 
 class TP2 : ComponentActivity() {
     private lateinit var fileListAdapter: CustomAdapter

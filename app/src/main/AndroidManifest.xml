@@ -23,6 +23,12 @@
             android:exported="true"
             android:label="TP2"
             android:theme="@style/Theme.TPAndroid">
+        </activity>
+        <activity
+            android:name=".TP3"
+            android:exported="true"
+            android:label="TP2"
+            android:theme="@style/Theme.TPAndroid">
             <intent-filter> <!-- A indiquer pour l'activité à lancer au démarrage -->
                 <action android:name="android.intent.action.MAIN" />
 

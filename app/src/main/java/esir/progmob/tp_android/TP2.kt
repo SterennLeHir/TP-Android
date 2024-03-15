@@ -5,6 +5,9 @@ import android.content.Context
 import android.os.Bundle
 import android.os.FileObserver
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
@@ -20,7 +23,7 @@ import java.io.InputStream
 
 
 class TP2 : ComponentActivity() {
-    private lateinit var fileListAdapter: ArrayAdapter<String>
+    private lateinit var fileListAdapter: CustomAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.tp2_layout1);
@@ -80,9 +83,9 @@ class TP2 : ComponentActivity() {
 
         // Adapter for ListView
         val filesDir = applicationContext.filesDir
-        val fileList = filesDir.listFiles()?.map { it.name } ?: emptyList()
-        fileListAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, fileList)
+        val fileList = filesDir.listFiles()?.toList() ?: emptyList()
         val list = findViewById<ListView>(R.id.list)
+        fileListAdapter = CustomAdapter(this, fileList, list)
         list.adapter = fileListAdapter
 
         val buttonOk2 = findViewById<Button>(R.id.ok2)
@@ -98,8 +101,7 @@ class TP2 : ComponentActivity() {
             } else {
                 // on crée un fichier avec le nom mis dans l'editView
                 this.openFileOutput(nameFile, Context.MODE_PRIVATE) // /!\ createNewFile ne marche pas
-                refreshFileList()
-                list.adapter = fileListAdapter
+                refreshFileList(list)
             }
         }
 
@@ -109,9 +111,44 @@ class TP2 : ComponentActivity() {
     /**
      * Met à jour la liste des fichiers
      */
-    private fun refreshFileList() {
+    protected fun refreshFileList(listView : ListView) {
         val filesDir = applicationContext.filesDir
-        val fileList = filesDir.listFiles()?.map { it.name } ?: emptyList()
-        fileListAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, fileList)
+        val fileList = filesDir.listFiles()?.toList() ?: emptyList()
+        fileListAdapter = CustomAdapter(this, fileList, listView)
+        listView.adapter = fileListAdapter
+    }
+
+    inner class CustomAdapter(context: Context, files: List<File>, listView: ListView) :
+        ArrayAdapter<File>(context, 0, files) {
+
+        private var listView: ListView = listView
+
+        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+            var itemView = convertView
+            if (itemView == null) {
+                // on convertit le code xml en objet View
+                itemView = LayoutInflater.from(context).inflate(R.layout.item_view, parent, false)
+            }
+
+            val file = getItem(position)
+            val textViewListItem = itemView!!.findViewById<TextView>(R.id.textView5)
+            val buttonListItem = itemView.findViewById<Button>(R.id.button5)
+
+            // Set file name in TextView
+            textViewListItem.text = file?.name ?: ""
+
+            // Set click listener for the button
+            buttonListItem.setOnClickListener {
+                file?.let {
+                    if (it.delete()) {
+                        // File deleted successfully
+                        // Refresh the file list
+                        refreshFileList(listView)
+                    }
+                }
+            }
+
+            return itemView
+        }
     }
 }

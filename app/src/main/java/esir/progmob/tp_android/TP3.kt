@@ -1,27 +1,36 @@
 package esir.progmob.tp_android
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Color
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.VelocityTracker
+import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.ListView
 import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.GestureDetectorCompat
 
-class TP3 : ComponentActivity(), GestureDetector.OnGestureListener {
+class TP3 : ComponentActivity() { //GestureDetector.OnGestureListener pour les mouvements
 
-    // Question 2 private lateinit var mDetector: GestureDetectorCompat
+    // Question 1 private lateinit var mDetector: GestureDetectorCompat
 
-    private var mVelocityTracker: VelocityTracker? = null
+    // Question 2 private var mVelocityTracker: VelocityTracker? = null
+
+    private lateinit var sensorManager: SensorManager
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.tp3_layout1);
-        /* Question 2
+        setContentView(R.layout.tp3_layout1)
+        /* Question 1
         mDetector = GestureDetectorCompat(this, this)
         mDetector.setIsLongpressEnabled(true)
         val ecran = findViewById<ConstraintLayout>(R.id.ecran)
@@ -29,10 +38,19 @@ class TP3 : ComponentActivity(), GestureDetector.OnGestureListener {
             Log.i("LISTENER", event.toString())
             mDetector.onTouchEvent(event)
         }
-    */
+        */
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val deviceSensors: List<Sensor> = sensorManager.getSensorList(Sensor.TYPE_ALL)
+        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, deviceSensors.map{d -> d.name + " " + d.isWakeUpSensor});
+        val list = findViewById<ListView>(R.id.list)
+        list.adapter = adapter
+        val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        Log.d("SENSOR", accelerometer?.minDelay.toString())
+        val light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+        Log.d("SENSOR", light?.)
     }
+    /* Question 2
     override fun onTouchEvent(event: MotionEvent): Boolean {
-
         when (event.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
                 // Reset the velocity tracker back to its initial state.
@@ -54,8 +72,8 @@ class TP3 : ComponentActivity(), GestureDetector.OnGestureListener {
                     computeCurrentVelocity(1000)
                     // Log velocity of pixels per second. It's best practice to
                     // use VelocityTrackerCompat where possible.
-                    Log.d("", "X velocity: ${getXVelocity(pointerId)}")
-                    Log.d("", "Y velocity: ${getYVelocity(pointerId)}")
+                    Log.d("Velo", "X velocity: ${getXVelocity(pointerId)}")
+                    Log.d("Velo", "Y velocity: ${getYVelocity(pointerId)}")
                 }
             }
             MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
@@ -65,7 +83,9 @@ class TP3 : ComponentActivity(), GestureDetector.OnGestureListener {
             }
         }
         return true
-    }
+    }*/
+
+    /* Question 1
     override fun onDown(e: MotionEvent): Boolean {
         Log.d("TOUCH", e.toString())
         val ecran = findViewById<ConstraintLayout>(R.id.ecran)
@@ -106,5 +126,5 @@ class TP3 : ComponentActivity(), GestureDetector.OnGestureListener {
         val ecran = findViewById<ConstraintLayout>(R.id.ecran)
         ecran.setBackgroundColor(Color.parseColor("#1222FF"))
         return true
-    }
+    } */
 }

@@ -2,29 +2,42 @@ package esir.progmob.tp_android
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Color
 import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.util.Log
-import android.view.GestureDetector
-import android.view.MotionEvent
-import android.view.VelocityTracker
-import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.ListView
-import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.GestureDetectorCompat
+import kotlin.math.abs
 
-class TP3 : ComponentActivity() { //GestureDetector.OnGestureListener pour les mouvements
+class TP3 : ComponentActivity(),
+    SensorEventListener { //GestureDetector.OnGestureListener pour les mouvements
 
     // Question 1 private lateinit var mDetector: GestureDetectorCompat
 
     // Question 2 private var mVelocityTracker: VelocityTracker? = null
 
     private lateinit var sensorManager: SensorManager
+    private var light: Sensor? = null
+    private var linear_acceleration: Sensor? = null
+
+    //attributs acceleration
+    private var lastAcceleration: FloatArray = floatArrayOf(0f, 0f, 0f)
+    private var accelerationDelta: Float = 0f
+    private var accelerationThreshold: Float = 15f
+    private var lastUpdate: Long = 0
+    private var counter: Int = 0
+    private var lastShake : Long = 0
+
+    //vibrator
+    private var vibrator: Vibrator? = null
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,15 +52,73 @@ class TP3 : ComponentActivity() { //GestureDetector.OnGestureListener pour les m
             mDetector.onTouchEvent(event)
         }
         */
+
+        //Question capteurs
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val deviceSensors: List<Sensor> = sensorManager.getSensorList(Sensor.TYPE_ALL)
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, deviceSensors.map{d -> d.name + " " + d.isWakeUpSensor});
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_list_item_1,
+            deviceSensors.map { d -> d.name + " " + d.isWakeUpSensor });
         val list = findViewById<ListView>(R.id.list)
         list.adapter = adapter
-        val accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        Log.d("SENSOR", accelerometer?.minDelay.toString())
-        val light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
-        Log.d("SENSOR", light?.)
+        linear_acceleration = sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)
+        Log.d("SENSOR", linear_acceleration?.minDelay.toString())
+        light = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+
+        // vibrateur
+        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        if (event?.sensor?.type == Sensor.TYPE_LIGHT) {
+            val lightValue = event.values[0]
+            Log.d("SENSOR", lightValue.toString())
+        } else if (event?.sensor?.type == Sensor.TYPE_LINEAR_ACCELERATION) {
+            val curTime = System.currentTimeMillis()
+            if (curTime - lastUpdate > 100) { // fréquence d'échantillonage
+                val acceleration = event.values.clone()
+                accelerationDelta = abs(acceleration[0] - lastAcceleration[0])
+                val sign = acceleration[0] * lastAcceleration[0] //detection changement de sens
+
+                Log.d("SENSOR", acceleration[0].toString() + " " + counter)
+                if (accelerationDelta > accelerationThreshold && sign < 0) { // detecte une secousse
+                    if(curTime - lastShake < 500){ // si on a shake il n'y a pas longtemps
+                        // secousse detectée
+                        counter++
+                        if (counter >= 3) { // le téléphone a vraiment été secoué
+                            counter = 0
+                            Toast.makeText(this, "AAAAAAAAAAAAAAAAAAAAAAAAAAAh!", Toast.LENGTH_SHORT).show()
+                            vibrator?.vibrate(1000)
+                        }
+                    }
+                    else{
+                        counter = 0 //timeout du dernier shake
+                    }
+                    lastShake = curTime
+                }
+                lastAcceleration = acceleration // valeur de la dernière accéleration
+            }
+            lastUpdate = curTime // temps de la dernière accélération
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Register sensors
+        sensorManager.registerListener(this, light, SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager.registerListener(this, linear_acceleration, SensorManager.SENSOR_DELAY_NORMAL)
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Unregister all listeners
+        sensorManager.unregisterListener(this)
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+        //do nothing
     }
     /* Question 2
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -127,4 +198,5 @@ class TP3 : ComponentActivity() { //GestureDetector.OnGestureListener pour les m
         ecran.setBackgroundColor(Color.parseColor("#1222FF"))
         return true
     } */
+
 }
